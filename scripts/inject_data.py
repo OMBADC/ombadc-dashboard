@@ -4,8 +4,8 @@ import io
 import sys
 import requests
 
-PROJECTS_URL  = "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?gid=0&single=true&output=csv"
-DISTRICTS_URL = "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?gid=YOUR_DISTRICTS_GID&single=true&output=csv"
+PROJECTS_URL  = "https://docs.google.com/spreadsheets/d/1jqUSc8-h7xQtgbK3kNQex9EHjaIusFWDcKJsT78rF3Q/pub?gid=0&single=true&output=csv"
+DISTRICTS_URL = "https://docs.google.com/spreadsheets/d/1jqUSc8-h7xQtgbK3kNQex9EHjaIusFWDcKJsT78rF3Q/pub?gid=1237062162&single=true&output=csv"
 
 def fetch_csv(url):
     headers = {
