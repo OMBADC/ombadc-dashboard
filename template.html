@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMBADC Analytics Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --f-body: 'DM Sans', system-ui, sans-serif;
+    --f-mono: 'DM Mono', monospace;
+    --navy: #0B1E3D; --navy-mid: #132C56; --blue: #185FA5; --blue-light: #378ADD;
+    --green: #3B6D11; --amber: #BA7517; --red: #993C1D; --teal: #0F6E56; --purple: #534AB7;
+  }
+  #app { display: flex; height: 100vh; min-height: 600px; background: #F4F6FA; font-family: var(--f-body); font-size: 13px; letter-spacing: 0.01em; }
+  #landing { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--navy); z-index: 100; transition: opacity 0.6s ease; font-family: var(--f-body); }
+  #landing.hidden { opacity: 0; pointer-events: none; }
+  .land-eyebrow { font-size: 10px; letter-spacing: 0.22em; color: #7BAFD4; text-transform: uppercase; font-weight: 500; margin-bottom: 14px; }
+  .land-title { font-size: 52px; font-weight: 600; color: #fff; letter-spacing: -0.03em; line-height: 1; margin-bottom: 8px; }
+  .land-sub { font-size: 13px; color: #7BAFD4; margin-bottom: 52px; letter-spacing: 0.03em; font-weight: 300; }
+  .land-stats { display: flex; gap: 52px; margin-bottom: 60px; }
+  .land-stat { text-align: center; }
+  .land-stat-val { font-size: 30px; font-weight: 600; color: #fff; letter-spacing: -0.02em; font-family: var(--f-mono); }
+  .land-stat-label { font-size: 10px; color: #7BAFD4; margin-top: 5px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 400; }
+  .land-divider { width: 1px; background: rgba(255,255,255,0.12); }
+  .enter-btn { background: var(--blue); color: #fff; border: none; padding: 13px 36px; border-radius: 6px; font-size: 13px; font-family: var(--f-body); font-weight: 500; cursor: pointer; letter-spacing: 0.06em; transition: background 0.2s; }
+  .enter-btn:hover { background: var(--blue-light); }
+  .land-grid { position: absolute; inset: 0; opacity: 0.035; background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px); background-size: 56px 56px; pointer-events: none; }
+  .land-rule { width: 280px; height: 1px; background: rgba(55,138,221,0.4); margin-bottom: 40px; }
+  #sidebar { width: 210px; min-width: 210px; background: var(--navy); display: flex; flex-direction: column; font-family: var(--f-body); }
+  .sb-brand { padding: 22px 18px 18px; border-bottom: 0.5px solid rgba(255,255,255,0.08); }
+  .sb-org { font-size: 9px; letter-spacing: 0.2em; color: #5A8FBD; text-transform: uppercase; font-weight: 500; margin-bottom: 4px; }
+  .sb-name { font-size: 18px; font-weight: 600; color: #fff; letter-spacing: -0.02em; }
+  .sb-tagline { font-size: 10px; color: rgba(255,255,255,0.3); font-weight: 300; margin-top: 2px; letter-spacing: 0.03em; }
+  .sb-nav { padding: 14px 0; flex: 1; }
+  .sb-section { font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.28); padding: 14px 18px 6px; font-weight: 500; }
+  .sb-item { display: flex; align-items: center; gap: 10px; padding: 9px 18px; cursor: pointer; color: rgba(255,255,255,0.5); font-size: 12px; border-left: 2px solid transparent; transition: all 0.15s; font-weight: 400; letter-spacing: 0.02em; }
+  .sb-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.85); }
+  .sb-item.active { background: rgba(55,138,221,0.15); color: #85B7EB; border-left-color: var(--blue-light); }
+  .sb-icon { width: 15px; text-align: center; font-size: 13px; opacity: 0.7; }
+  .sb-footer { padding: 14px 18px; border-top: 0.5px solid rgba(255,255,255,0.08); font-size: 10px; color: rgba(255,255,255,0.22); font-family: var(--f-mono); letter-spacing: 0.04em; }
+  #main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 15px 26px; background: #fff; border-bottom: 1px solid #E8ECF2; }
+  .topbar-title { font-size: 16px; font-weight: 600; color: #0B1E3D; letter-spacing: -0.02em; }
+  .topbar-sub { font-size: 11px; color: #7A8599; margin-top: 2px; font-weight: 400; letter-spacing: 0.02em; }
+  .topbar-badge { background: #E6F1FB; color: #0C447C; font-size: 10px; padding: 4px 11px; border-radius: 4px; font-weight: 500; letter-spacing: 0.06em; font-family: var(--f-mono); }
+  .content { padding: 22px 26px; flex: 1; }
+  .panel { display: none; } .panel.active { display: block; }
+  .metric-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .metric-card { background: #fff; border: 1px solid #E8ECF2; border-radius: 8px; padding: 16px 18px; border-top: 3px solid var(--navy); }
+  .metric-label { font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: #7A8599; margin-bottom: 8px; font-weight: 500; }
+  .metric-val { font-size: 22px; font-weight: 600; color: #0B1E3D; letter-spacing: -0.03em; font-family: var(--f-mono); }
+  .metric-sub { font-size: 11px; color: #7A8599; margin-top: 4px; font-weight: 400; }
+  .metric-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 5px; }
+  .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .chart-card { background: #fff; border: 1px solid #E8ECF2; border-radius: 8px; padding: 18px; }
+  .chart-card.full { grid-column: 1 / -1; }
+  .card-title { font-size: 13px; font-weight: 600; color: #0B1E3D; margin-bottom: 3px; letter-spacing: -0.01em; }
+  .card-sub { font-size: 11px; color: #7A8599; margin-bottom: 14px; font-weight: 400; }
+  .chart-wrap { position: relative; width: 100%; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 10px; }
+  .leg-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #7A8599; font-weight: 400; }
+  .leg-sq { width: 8px; height: 8px; border-radius: 2px; }
+  .data-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .data-table th { text-align: left; padding: 9px 11px; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: #7A8599; border-bottom: 1px solid #E8ECF2; font-weight: 600; }
+  .data-table td { padding: 9px 11px; border-bottom: 0.5px solid #F0F3F8; color: #1A2B45; font-size: 12px; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: #F8FAFD; }
+  .data-table tr { cursor: pointer; }
+  .progress-bar { height: 4px; background: #EDF0F7; border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 2px; }
+  .status-pill { display: inline-block; padding: 3px 9px; border-radius: 4px; font-size: 10px; font-weight: 500; letter-spacing: 0.04em; font-family: var(--f-mono); }
+  .pill-ongoing { background: #E6F1FB; color: #0C447C; }
+  .pill-completed { background: #EAF3DE; color: #27500A; }
+  #drillback { display: none; align-items: center; gap: 8px; font-size: 12px; color: var(--blue-light); cursor: pointer; margin-bottom: 16px; padding: 6px 0; font-weight: 500; }
+  #drillback:hover { text-decoration: underline; }
+  #drillback.visible { display: flex; }
+  #drill-title { font-size: 17px; font-weight: 600; margin-bottom: 4px; color: #0B1E3D; letter-spacing: -0.02em; }
+  #drill-sub { font-size: 11px; color: #7A8599; margin-bottom: 16px; }
+  .dist-row { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+  .dist-label { width: 82px; font-size: 11px; color: #7A8599; text-align: right; font-weight: 400; }
+  .dist-bar-wrap { flex: 1; height: 18px; background: #EDF0F7; border-radius: 3px; overflow: hidden; cursor: pointer; }
+  .dist-bar-fill { height: 100%; display: flex; align-items: center; padding-left: 7px; font-size: 10px; color: #fff; border-radius: 3px; font-family: var(--f-mono); transition: filter 0.2s; }
+  .dist-bar-wrap:hover .dist-bar-fill { filter: brightness(1.1); }
+  .dist-val { width: 60px; font-size: 11px; color: #1A2B45; font-weight: 500; font-family: var(--f-mono); }
+  .sector-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 14px; margin-top: 12px; }
+  .slg-item { display: flex; align-items: center; gap: 7px; font-size: 11px; cursor: pointer; padding: 4px 6px; border-radius: 5px; }
+  .slg-item:hover { background: #F8FAFD; }
+  .slg-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .slg-name { color: #1A2B45; flex: 1; font-weight: 400; }
+  .slg-val { color: #7A8599; font-size: 10px; font-family: var(--f-mono); font-weight: 500; }
+  .filter-bar { display: flex; gap: 7px; margin-bottom: 16px; flex-wrap: wrap; }
+  .filter-btn { padding: 5px 13px; border-radius: 5px; border: 1px solid #D8DDE8; background: #fff; color: #7A8599; font-size: 11px; cursor: pointer; transition: all 0.15s; font-family: var(--f-body); font-weight: 500; letter-spacing: 0.02em; }
+  .filter-btn:hover { background: #F4F6FA; }
+  .filter-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+</style>
+</head>
+<body>
+<div id="landing">
+  <div class="land-grid"></div>
+  <div class="land-eyebrow">Government of Odisha · Mining Development</div>
+  <div class="land-title">OMBADC</div>
+  <div class="land-sub">Odisha Mineral Bearing Areas Development Corporation</div>
+  <div class="land-rule"></div>
+  <div class="land-stats">
+    <div class="land-stat"><div class="land-stat-val">&#8377;19,264</div><div class="land-stat-label">Crores Sanctioned</div></div>
+    <div class="land-divider"></div>
+    <div class="land-stat"><div class="land-stat-val">60</div><div class="land-stat-label">Projects</div></div>
+    <div class="land-divider"></div>
+    <div class="land-stat"><div class="land-stat-val">8</div><div class="land-stat-label">Districts</div></div>
+    <div class="land-divider"></div>
+    <div class="land-stat"><div class="land-stat-val">11.67M</div><div class="land-stat-label">Population</div></div>
+  </div>
+  <button class="enter-btn" onclick="enterDashboard()">Enter Dashboard &#8594;</button>
+</div>
+<div id="app">
+  <div id="sidebar">
+    <div class="sb-brand">
+      <div class="sb-org">OMBADC · Odisha</div>
+      <div class="sb-name">Analytics</div>
+      <div class="sb-tagline">Mining Area Development</div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-section">Overview</div>
+      <div class="sb-item active" onclick="nav('overview',this)"><span class="sb-icon">&#9638;</span> Dashboard</div>
+      <div class="sb-section">Analysis</div>
+      <div class="sb-item" onclick="nav('sectors',this)"><span class="sb-icon">&#9685;</span> Sectors</div>
+      <div class="sb-item" onclick="nav('districts',this)"><span class="sb-icon">&#8862;</span> Districts</div>
+      <div class="sb-item" onclick="nav('projects',this)"><span class="sb-icon">&#8801;</span> Projects</div>
+      <div class="sb-item" onclick="nav('financial',this)"><span class="sb-icon">&#8377;</span> Financial</div>
+    </div>
+    <div class="sb-footer">Data · 18 Apr 2026</div>
+  </div>
+  <div id="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="page-title">Dashboard Overview</div>
+        <div class="topbar-sub" id="page-sub">All districts · All sectors · As of April 2026</div>
+      </div>
+      <div class="topbar-badge">60 Projects</div>
+    </div>
+    <div class="content">
+
+      <div class="panel active" id="panel-overview">
+        <div class="metric-row">
+          <div class="metric-card"><div class="metric-label">Total Sanctioned</div><div class="metric-val">&#8377;19,264 Cr</div><div class="metric-sub">Across 60 projects</div></div>
+          <div class="metric-card" style="border-top-color:#378ADD"><div class="metric-label">Total Released</div><div class="metric-val">&#8377;14,436 Cr</div><div class="metric-sub"><span class="metric-dot" style="background:#378ADD"></span>74.9% of sanctioned</div></div>
+          <div class="metric-card" style="border-top-color:#3B6D11"><div class="metric-label">Total Expenditure</div><div class="metric-val">&#8377;11,233 Cr</div><div class="metric-sub"><span class="metric-dot" style="background:#639922"></span>77.8% of released</div></div>
+          <div class="metric-card" style="border-top-color:#BA7517"><div class="metric-label">Beneficiaries</div><div class="metric-val">3.27M+</div><div class="metric-sub">Households benefitted</div></div>
+        </div>
+        <div class="chart-row">
+          <div class="chart-card">
+            <div class="card-title">Fund utilisation by sector</div>
+            <div class="card-sub">Sanctioned vs Released vs Expended (&#8377; Crores)</div>
+            <div class="legend">
+              <div class="leg-item"><span class="leg-sq" style="background:#0B1E3D"></span>Sanctioned</div>
+              <div class="leg-item"><span class="leg-sq" style="background:#378ADD"></span>Released</div>
+              <div class="leg-item"><span class="leg-sq" style="background:#639922"></span>Expended</div>
+            </div>
+            <div class="chart-wrap" style="height:240px"><canvas id="c-sector-bar"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="card-title">Project status distribution</div>
+            <div class="card-sub">Ongoing vs Completed across all 60 projects</div>
+            <div class="chart-wrap" style="height:200px"><canvas id="c-status-donut"></canvas></div>
+            <div style="display:flex;justify-content:center;gap:22px;margin-top:10px">
+              <div class="leg-item"><span class="leg-sq" style="background:#185FA5;border-radius:50%"></span>Ongoing: 48</div>
+              <div class="leg-item"><span class="leg-sq" style="background:#3B6D11;border-radius:50%"></span>Completed: 12</div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-row">
+          <div class="chart-card">
+            <div class="card-title">Physical progress by sector</div>
+            <div class="card-sub">Average completion % per sector</div>
+            <div class="chart-wrap" style="height:220px"><canvas id="c-progress-bar"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="card-title">Population coverage by district</div>
+            <div class="card-sub">Persons covered — click to explore</div>
+            <div id="dist-bars" style="margin-top:10px"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="panel-sectors">
+        <div class="chart-row">
+          <div class="chart-card">
+            <div class="card-title">Sector-wise sanctioned amount</div>
+            <div class="card-sub">&#8377; Crores — click a segment to filter projects</div>
+            <div class="chart-wrap" style="height:240px"><canvas id="c-sector-pie"></canvas></div>
+            <div class="sector-legend" id="sector-legend"></div>
+          </div>
+          <div class="chart-card">
+            <div class="card-title">Financial efficiency by sector</div>
+            <div class="card-sub">Expenditure as % of released amount</div>
+            <div class="chart-wrap" style="height:200px"><canvas id="c-efficiency"></canvas></div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="card-title">Sector performance matrix</div>
+          <div class="card-sub">All sectors — click a row to filter projects</div>
+          <table class="data-table">
+            <thead><tr><th>Sector</th><th>Projects</th><th>Sanctioned (&#8377; Cr)</th><th>Released (&#8377; Cr)</th><th>Expended (&#8377; Cr)</th><th>Avg Progress</th><th>Completed</th></tr></thead>
+            <tbody id="sector-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel" id="panel-districts">
+        <div class="metric-row" id="district-metrics"></div>
+        <div class="chart-row">
+          <div class="chart-card">
+            <div class="card-title">Village &amp; block coverage</div>
+            <div class="card-sub">Blocks and villages per district (villages &#247; 10)</div>
+            <div class="chart-wrap" style="height:240px"><canvas id="c-district-coverage"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="card-title">Population covered per district</div>
+            <div class="card-sub">Total persons under OMBADC coverage</div>
+            <div class="chart-wrap" style="height:240px"><canvas id="c-district-pop"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="panel-projects">
+        <div id="drillback" onclick="exitDrill()">&#8592; Back to all projects</div>
+        <div id="drill-title">All Projects</div>
+        <div id="drill-sub">60 projects across 8 sectors — click any row to drill down</div>
+        <div class="filter-bar" id="sector-filters"></div>
+        <div class="chart-card" style="padding:0;overflow:hidden">
+          <table class="data-table">
+            <thead><tr><th>#</th><th>Project Name</th><th>Sector</th><th>Sanctioned</th><th>Expended</th><th>Progress</th><th>Status</th></tr></thead>
+            <tbody id="project-table-body"></tbody>
+          </table>
+        </div>
+        <div id="drill-detail" style="display:none;margin-top:16px">
+          <div class="chart-row">
+            <div class="chart-card">
+              <div class="card-title" id="dd-title">Financial breakdown</div>
+              <div id="dd-meta" style="font-size:12px;color:#7A8599;margin-bottom:14px;line-height:1.8"></div>
+              <div class="chart-wrap" style="height:160px"><canvas id="c-drill-bar"></canvas></div>
+            </div>
+            <div class="chart-card">
+              <div class="card-title">Fund flow</div>
+              <div class="card-sub">Sanctioned &#8594; Released &#8594; Expended</div>
+              <div id="dd-funnel" style="margin-top:10px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="panel-financial">
+        <div class="metric-row">
+          <div class="metric-card"><div class="metric-label">Total Pipeline</div><div class="metric-val">&#8377;19,264 Cr</div><div class="metric-sub">Sanctioned investment</div></div>
+          <div class="metric-card" style="border-top-color:#993C1D"><div class="metric-label">Pending Release</div><div class="metric-val">&#8377;4,828 Cr</div><div class="metric-sub">25.1% yet to be released</div></div>
+          <div class="metric-card" style="border-top-color:#BA7517"><div class="metric-label">Unspent Released</div><div class="metric-val">&#8377;3,203 Cr</div><div class="metric-sub">22.2% released but unspent</div></div>
+          <div class="metric-card" style="border-top-color:#3B6D11"><div class="metric-label">Effective Spend Rate</div><div class="metric-val">58.3%</div><div class="metric-sub">Expended / Sanctioned</div></div>
+        </div>
+        <div class="chart-row">
+          <div class="chart-card full">
+            <div class="card-title">Fund flow — top 10 projects by sanction</div>
+            <div class="card-sub">Sanctioned, Released and Expended (&#8377; Crores)</div>
+            <div class="chart-wrap" style="height:280px"><canvas id="c-waterfall"></canvas></div>
+          </div>
+        </div>
+        <div class="chart-row">
+          <div class="chart-card">
+            <div class="card-title">Beneficiary efficiency by sector</div>
+            <div class="card-sub">Persons reached per &#8377;100 Cr sanctioned</div>
+            <div class="chart-wrap" style="height:220px"><canvas id="c-bene-eff"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="card-title">Top 5 departments by expenditure</div>
+            <div class="card-sub">&#8377; Crores spent</div>
+            <div class="chart-wrap" style="height:200px"><canvas id="c-dept"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const F="'DM Sans',system-ui,sans-serif",FM="'DM Mono',monospace";
+Chart.defaults.font.family=F;Chart.defaults.font.size=11;Chart.defaults.color='#7A8599';
+const projects = __PROJECTS_DATA__;
+const districts = __DISTRICTS_DATA__;
+const COLORS={'Drinking Water':'#185FA5','Education':'#639922','Health':'#BA7517','Livelihood Promotion':'#0F6E56','Rural Connectivity':'#993C1D','Environmental Protection':'#534AB7','Water Conservation':'#1D9E75'};
+const PALETTE=['#0B1E3D','#185FA5','#378ADD','#639922','#BA7517','#0F6E56','#D85A30','#534AB7'];
+function getSectors(){const s={};projects.forEach(p=>{if(!s[p.sector])s[p.sector]={sanc:0,rel:0,exp:0,progs:[],count:0,completed:0,bene:0};s[p.sector].sanc+=p.sanc;s[p.sector].rel+=p.rel||0;s[p.sector].exp+=p.exp||0;if(p.prog>0)s[p.sector].progs.push(p.prog);s[p.sector].count++;s[p.sector].bene+=p.bene||0;if(p.status==='Completed')s[p.sector].completed++;});return s;}
+let activeFilter='All',drillChart=null;
+function nav(page,el){document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));el.classList.add('active');document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById('panel-'+page).classList.add('active');const titles={overview:'Dashboard Overview',sectors:'Sector Analysis',districts:'District Coverage',projects:'Project Register',financial:'Financial Analytics'};const subs={overview:'All districts · All sectors · As of April 2026',sectors:'Breakdown by sector · 7 sectors',districts:'8 districts under OMBADC',projects:'60 projects — click to drill down',financial:'Fund flow & expenditure analysis'};document.getElementById('page-title').textContent=titles[page];document.getElementById('page-sub').textContent=subs[page];if(page==='financial')initFinancial();if(page==='districts')initDistricts();if(page==='sectors')initSectors();if(page==='projects')initProjects();}
+function enterDashboard(){document.getElementById('landing').classList.add('hidden');setTimeout(()=>{document.getElementById('landing').style.display='none';initOverview();initProjects();},650);}
+function initOverview(){const sectors=getSectors(),sNames=Object.keys(sectors);new Chart(document.getElementById('c-sector-bar'),{type:'bar',data:{labels:sNames.map(s=>s.length>14?s.slice(0,14)+'…':s),datasets:[{label:'Sanctioned',data:sNames.map(s=>Math.round(sectors[s].sanc)),backgroundColor:'#0B1E3D'},{label:'Released',data:sNames.map(s=>Math.round(sectors[s].rel)),backgroundColor:'#378ADD'},{label:'Expended',data:sNames.map(s=>Math.round(sectors[s].exp)),backgroundColor:'#639922'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:10,family:F},maxRotation:30}},y:{ticks:{callback:v=>'₹'+v,font:{family:FM,size:10}}}}}});new Chart(document.getElementById('c-status-donut'),{type:'doughnut',data:{labels:['Ongoing','Completed'],datasets:[{data:[48,12],backgroundColor:['#185FA5','#3B6D11'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},cutout:'68%'}});const avgProgs=sNames.map(s=>{const a=sectors[s].progs;return a.length?Math.round((a.reduce((x,b)=>x+b,0)/a.length)*100):0;});new Chart(document.getElementById('c-progress-bar'),{type:'bar',data:{labels:sNames.map(s=>s.length>16?s.slice(0,16)+'…':s),datasets:[{data:avgProgs,backgroundColor:sNames.map(s=>COLORS[s]||'#888'),label:'Progress %'}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw+'%'}}},scales:{x:{max:100,ticks:{callback:v=>v+'%',font:{family:FM,size:10}}},y:{ticks:{font:{size:10,family:F}}}}}});const maxPop=Math.max(...districts.map(d=>d.pop));const dColors=['#0B1E3D','#185FA5','#378ADD','#1D9E75','#BA7517','#534AB7','#993C1D','#3B6D11'];document.getElementById('dist-bars').innerHTML=districts.map((d,i)=>{const w=Math.round((d.pop/maxPop)*100);return`<div class="dist-row"><div class="dist-label">${d.name}</div><div class="dist-bar-wrap"><div class="dist-bar-fill" style="width:${w}%;background:${dColors[i]}">${w>22?d.pop.toLocaleString('en-IN'):''}</div></div><div class="dist-val">${w<=22?d.pop.toLocaleString('en-IN'):''}</div></div>`;}).join('');}
+function initSectors(){const sectors=getSectors(),sNames=Object.keys(sectors);new Chart(document.getElementById('c-sector-pie'),{type:'pie',data:{labels:sNames,datasets:[{data:sNames.map(s=>Math.round(sectors[s].sanc)),backgroundColor:sNames.map(s=>COLORS[s]||'#888'),borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`₹${ctx.raw} Cr`}}}}});document.getElementById('sector-legend').innerHTML=sNames.map(s=>`<div class="slg-item" onclick="filterProjects('${s}')"><span class="slg-dot" style="background:${COLORS[s]||'#888'}"></span><span class="slg-name">${s}</span><span class="slg-val">₹${Math.round(sectors[s].sanc)} Cr</span></div>`).join('');const effs=sNames.map(s=>sectors[s].rel>0?Math.round((sectors[s].exp/sectors[s].rel)*100):0);new Chart(document.getElementById('c-efficiency'),{type:'bar',data:{labels:sNames.map(s=>s.length>14?s.slice(0,14)+'…':s),datasets:[{data:effs,backgroundColor:effs.map(v=>v>=80?'#3B6D11':v>=60?'#378ADD':'#BA7517'),label:'Efficiency %'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw+'%'}}},scales:{x:{ticks:{font:{size:10,family:F},maxRotation:30}},y:{max:100,ticks:{callback:v=>v+'%',font:{family:FM,size:10}}}}}});document.getElementById('sector-table-body').innerHTML=sNames.map(s=>{const d=sectors[s];const avgP=d.progs.length?Math.round((d.progs.reduce((a,b)=>a+b,0)/d.progs.length)*100):0;const color=avgP>=80?'#3B6D11':avgP>=60?'#BA7517':'#993C1D';return`<tr onclick="filterProjects('${s}')"><td><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${COLORS[s]||'#888'};margin-right:7px"></span>${s}</td><td style="font-family:${FM}">${d.count}</td><td style="font-family:${FM}">₹${Math.round(d.sanc)}</td><td style="font-family:${FM}">₹${Math.round(d.rel)}</td><td style="font-family:${FM}">₹${Math.round(d.exp)}</td><td><div class="progress-bar" style="width:80px;display:inline-block;vertical-align:middle"><div class="progress-fill" style="width:${avgP}%;background:${color}"></div></div> <span style="font-size:10px;color:${color};font-family:${FM}">${avgP}%</span></td><td style="font-family:${FM}">${d.completed}/${d.count}</td></tr>`;}).join('');}
+function initDistricts(){const dColors=['#0B1E3D','#185FA5','#378ADD','#1D9E75','#BA7517','#534AB7','#993C1D','#3B6D11'];const totalPop=districts.reduce((a,d)=>a+d.pop,0);document.getElementById('district-metrics').innerHTML=`<div class="metric-card"><div class="metric-label">Districts Covered</div><div class="metric-val">8</div><div class="metric-sub">Mining-affected districts</div></div><div class="metric-card" style="border-top-color:#378ADD"><div class="metric-label">Total Blocks</div><div class="metric-val">${districts.reduce((a,d)=>a+d.blocks,0)}</div><div class="metric-sub">Blocks under OMBADC</div></div><div class="metric-card" style="border-top-color:#3B6D11"><div class="metric-label">Total Villages</div><div class="metric-val">${districts.reduce((a,d)=>a+d.villages,0).toLocaleString('en-IN')}</div><div class="metric-sub">Villages covered</div></div><div class="metric-card" style="border-top-color:#BA7517"><div class="metric-label">Total Population</div><div class="metric-val">${(totalPop/1e6).toFixed(2)}M</div><div class="metric-sub">Persons under coverage</div></div>`;if(window._dc)window._dc.destroy();window._dc=new Chart(document.getElementById('c-district-coverage'),{type:'bar',data:{labels:districts.map(d=>d.name),datasets:[{label:'Blocks',data:districts.map(d=>d.blocks),backgroundColor:'#0B1E3D'},{label:'Villages (÷10)',data:districts.map(d=>Math.round(d.villages/10)),backgroundColor:'#378ADD'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{font:{size:11,family:F}}}},scales:{x:{ticks:{font:{size:10,family:F}}},y:{ticks:{font:{size:10,family:FM}}}}}});if(window._dp)window._dp.destroy();window._dp=new Chart(document.getElementById('c-district-pop'),{type:'bar',data:{labels:districts.map(d=>d.name),datasets:[{label:'Population',data:districts.map(d=>d.pop),backgroundColor:dColors}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw.toLocaleString('en-IN')}}},scales:{x:{ticks:{font:{size:10,family:F}}},y:{ticks:{callback:v=>(v/1e5).toFixed(0)+'L',font:{size:10,family:FM}}}}}});}
+function filterProjects(sector){activeFilter=sector;document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));document.querySelectorAll('.sb-item')[4].classList.add('active');document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById('panel-projects').classList.add('active');document.getElementById('page-title').textContent='Project Register';renderProjectTable();}
+function initProjects(){const sectors=['All',...new Set(projects.map(p=>p.sector))];document.getElementById('sector-filters').innerHTML=sectors.map(s=>`<button class="filter-btn${s===activeFilter?' active':''}" onclick="setFilter('${s}',this)">${s}</button>`).join('');renderProjectTable();}
+function setFilter(s,btn){activeFilter=s;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');exitDrill();renderProjectTable();}
+function renderProjectTable(){const filtered=activeFilter==='All'?projects:projects.filter(p=>p.sector===activeFilter);document.getElementById('drill-title').textContent=activeFilter==='All'?'All Projects':activeFilter+' Projects';document.getElementById('drill-sub').textContent=filtered.length+' projects — click any row to drill down';document.getElementById('project-table-body').innerHTML=filtered.map(p=>{const prog=p.prog>0?Math.round(p.prog*100):0;const col=prog>=80?'#3B6D11':prog>=60?'#BA7517':'#993C1D';const pill=p.status==='Completed'?'pill-completed':'pill-ongoing';return`<tr onclick="drillProject(${p.id})"><td style="font-family:${FM};color:#7A8599">${p.id}</td><td style="max-width:210px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</td><td><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${COLORS[p.sector]||'#888'};margin-right:5px"></span>${p.sector}</td><td style="font-family:${FM}">₹${Math.round(p.sanc)}</td><td style="font-family:${FM}">₹${Math.round(p.exp||0)}</td><td><div class="progress-bar" style="width:60px;display:inline-block;vertical-align:middle"><div class="progress-fill" style="width:${prog}%;background:${col}"></div></div> <span style="font-size:10px;color:${col};font-family:${FM}">${prog}%</span></td><td><span class="status-pill ${pill}">${p.status}</span></td></tr>`;}).join('');document.getElementById('drill-detail').style.display='none';document.getElementById('drillback').classList.remove('visible');}
+function drillProject(id){const p=projects.find(x=>x.id===id);document.getElementById('drillback').classList.add('visible');document.getElementById('drill-title').textContent=p.name;document.getElementById('drill-sub').textContent=p.sector+' · '+p.dept+' · '+p.status;document.getElementById('dd-title').textContent='Financial breakdown';document.getElementById('dd-meta').innerHTML=`<span style="font-family:${FM}"><b>Sanctioned:</b> ₹${p.sanc} Cr &nbsp;·&nbsp; <b>Released:</b> ₹${p.rel||0} Cr &nbsp;·&nbsp; <b>Expended:</b> ₹${p.exp||0} Cr</span><br><span style="font-family:${FM}"><b>Progress:</b> ${Math.round(p.prog*100)}% &nbsp;·&nbsp; <b>Beneficiaries:</b> ${p.bene?p.bene.toLocaleString('en-IN'):'N/A'}</span>`;if(drillChart)drillChart.destroy();drillChart=new Chart(document.getElementById('c-drill-bar'),{type:'bar',data:{labels:['Sanctioned','Released','Expended'],datasets:[{data:[Math.round(p.sanc),Math.round(p.rel||0),Math.round(p.exp||0)],backgroundColor:['#0B1E3D','#378ADD','#639922'],borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'₹'+v,font:{family:FM,size:10}}}}}});const pR=p.sanc>0?Math.round((p.rel||0)/p.sanc*100):0;const pE=(p.rel||0)>0?Math.round((p.exp||0)/(p.rel||1)*100):0;document.getElementById('dd-funnel').innerHTML=`<div style="margin-bottom:12px"><div style="font-size:11px;color:#7A8599;margin-bottom:5px">Sanctioned → Released <span style="font-family:${FM};font-weight:500;color:#0B1E3D">${pR}%</span></div><div style="background:#EDF0F7;border-radius:4px;overflow:hidden;height:22px"><div style="width:${pR}%;background:#185FA5;height:100%;display:flex;align-items:center;padding-left:8px;font-size:10px;color:#fff;font-family:${FM}">₹${Math.round(p.rel||0)} Cr</div></div></div><div style="margin-bottom:12px"><div style="font-size:11px;color:#7A8599;margin-bottom:5px">Released → Expended <span style="font-family:${FM};font-weight:500;color:#0B1E3D">${pE}%</span></div><div style="background:#EDF0F7;border-radius:4px;overflow:hidden;height:22px"><div style="width:${pE}%;background:#3B6D11;height:100%;display:flex;align-items:center;padding-left:8px;font-size:10px;color:#fff;font-family:${FM}">₹${Math.round(p.exp||0)} Cr</div></div></div><div><div style="font-size:11px;color:#7A8599;margin-bottom:5px">Physical progress <span style="font-family:${FM};font-weight:500;color:#0B1E3D">${Math.round(p.prog*100)}%</span></div><div style="background:#EDF0F7;border-radius:4px;overflow:hidden;height:22px"><div style="width:${Math.round(p.prog*100)}%;background:#BA7517;height:100%;display:flex;align-items:center;padding-left:8px;font-size:10px;color:#fff;font-family:${FM}">${Math.round(p.prog*100)}%</div></div></div>`;document.getElementById('project-table-body').innerHTML='';document.getElementById('drill-detail').style.display='block';}
+function exitDrill(){document.getElementById('drillback').classList.remove('visible');document.getElementById('drill-detail').style.display='none';document.getElementById('drill-title').textContent=activeFilter==='All'?'All Projects':activeFilter+' Projects';renderProjectTable();}
+function initFinancial(){const top10=[...projects].sort((a,b)=>b.sanc-a.sanc).slice(0,10);if(window._wf)window._wf.destroy();window._wf=new Chart(document.getElementById('c-waterfall'),{type:'bar',data:{labels:top10.map(p=>p.name.length>20?p.name.slice(0,20)+'…':p.name),datasets:[{label:'Sanctioned',data:top10.map(p=>Math.round(p.sanc)),backgroundColor:'#0B1E3D'},{label:'Released',data:top10.map(p=>Math.round(p.rel||0)),backgroundColor:'#378ADD'},{label:'Expended',data:top10.map(p=>Math.round(p.exp||0)),backgroundColor:'#639922'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{font:{size:11,family:F}}}},scales:{x:{ticks:{font:{size:9,family:F},maxRotation:30,autoSkip:false}},y:{ticks:{callback:v=>'₹'+v+' Cr',font:{family:FM,size:10}}}}}});const sectors=getSectors();const sNames=Object.keys(sectors).filter(s=>sectors[s].bene>0);const beneEff=sNames.map(s=>Math.round(sectors[s].bene/(sectors[s].sanc/100)));if(window._bc)window._bc.destroy();window._bc=new Chart(document.getElementById('c-bene-eff'),{type:'bar',data:{labels:sNames.map(s=>s.length>16?s.slice(0,16)+'…':s),datasets:[{label:'Persons per ₹100 Cr',data:beneEff,backgroundColor:sNames.map(s=>COLORS[s]||'#888'),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw.toLocaleString('en-IN')+' persons per ₹100 Cr'}}},scales:{x:{ticks:{font:{size:10,family:F},maxRotation:20}},y:{ticks:{callback:v=>v>=1000?(v/1000).toFixed(0)+'K':v,font:{size:10,family:FM}},title:{display:true,text:'Persons per ₹100 Cr',font:{size:10,family:F}}}}}});const depts={};projects.forEach(p=>{if(!depts[p.dept])depts[p.dept]=0;depts[p.dept]+=p.exp||0;});const top5=Object.entries(depts).sort((a,b)=>b[1]-a[1]).slice(0,5);if(window._dc2)window._dc2.destroy();window._dc2=new Chart(document.getElementById('c-dept'),{type:'bar',data:{labels:top5.map(d=>d[0].length>22?d[0].slice(0,22)+'…':d[0]),datasets:[{data:top5.map(d=>Math.round(d[1])),backgroundColor:PALETTE.slice(0,5),label:'Expended',borderRadius:4}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{callback:v=>'₹'+v,font:{family:FM,size:10}}},y:{ticks:{font:{size:10,family:F}}}}}});}
+</script>
+</body>
+</html>
