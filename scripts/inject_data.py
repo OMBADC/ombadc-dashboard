@@ -13,14 +13,21 @@ def fetch_sheet_json(url):
     with urllib.request.urlopen(req, timeout=30) as response:
         raw = response.read().decode("utf-8")
     print(f"  Response length: {len(raw)} chars")
+    print(f"  First 500 chars: {raw[:500]}")
     start = raw.index("{")
     end   = raw.rindex("}") + 1
     data  = json.loads(raw[start:end])
     return data
 
 def parse_rows(data):
-    cols = [c.get("label", "").strip() for c in data["table"]["cols"]]
-    print(f"  Columns found: {cols}")
+    print(f"  Raw cols: {data['table']['cols'][:5]}")
+    cols = []
+    for c in data["table"]["cols"]:
+        label = c.get("label", "").strip()
+        if not label:
+            label = c.get("id", "").strip()
+        cols.append(label)
+    print(f"  Columns parsed: {cols}")
     rows = []
     for row in data["table"]["rows"]:
         if row is None:
@@ -30,6 +37,7 @@ def parse_rows(data):
             if i < len(cols):
                 record[cols[i]] = cell["v"] if cell and cell.get("v") is not None else ""
         rows.append(record)
+    print(f"  First row sample: {rows[0] if rows else 'NO ROWS'}")
     return rows
 
 def fetch_projects():
