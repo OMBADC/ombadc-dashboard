@@ -24,6 +24,9 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install dependencies
+        run: pip install requests
+
       - name: Run data injection script
         run: python scripts/inject_data.py
 
