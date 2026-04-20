@@ -2,25 +2,17 @@ import json
 import sys
 import urllib.request
 
-# Your Sheet ID
 SHEET_ID = "1jqUSc8-h7xQtgbK3kNQex9EHjaIusFWDcKJsT78rF3Q"
 
-# Google Sheets JSON export — no auth needed if sheet is public viewer
-PROJECTS_URL  = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}gviz/tq?tqx=out:json&sheet=Projects"
-DISTRICTS_URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}gviz/tq?tqx=out:json&sheet=Districts"
+PROJECTS_URL  = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:json&sheet=Projects"
+DISTRICTS_URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:json&sheet=Districts"
 
 def fetch_sheet_json(url):
     print(f"  Fetching: {url[:80]}...")
-    req = urllib.request.Request(url, headers={
-        "User-Agent": "Mozilla/5.0",
-        "Accept": "application/json"
-    })
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
     with urllib.request.urlopen(req, timeout=30) as response:
         raw = response.read().decode("utf-8")
     print(f"  Response length: {len(raw)} chars")
-
-    # Google wraps the JSON in: /*O_o*/\ngoogle.visualization.Query.setResponse({...});
-    # Strip the wrapper to get pure JSON
     start = raw.index("{")
     end   = raw.rindex("}") + 1
     data  = json.loads(raw[start:end])
@@ -41,15 +33,15 @@ def parse_rows(data):
     return rows
 
 def fetch_projects():
-    print("Fetching projects sheet...")
+    print("Fetching Projects sheet...")
     data = fetch_sheet_json(PROJECTS_URL)
     rows = parse_rows(data)
-    print(f"  Found {len(rows)} data rows")
+    print(f"  Found {len(rows)} rows")
     projects = []
     for i, row in enumerate(rows):
         try:
             projects.append({
-                "id":     int(float(str(row.get("id", i+1)))),
+                "id":     int(float(str(row.get("id",     i+1)))),
                 "sector": str(row.get("sector", "")).strip(),
                 "name":   str(row.get("name",   "")).strip(),
                 "dept":   str(row.get("dept",   "")).strip(),
@@ -62,14 +54,14 @@ def fetch_projects():
             })
         except Exception as e:
             print(f"  Warning: skipping row {i+2}: {e} — {row}")
-    print(f"  Parsed {len(projects)} projects")
+    print(f"  Parsed {len(projects)} projects successfully")
     return projects
 
 def fetch_districts():
-    print("Fetching districts sheet...")
+    print("Fetching Districts sheet...")
     data = fetch_sheet_json(DISTRICTS_URL)
     rows = parse_rows(data)
-    print(f"  Found {len(rows)} data rows")
+    print(f"  Found {len(rows)} rows")
     districts = []
     for i, row in enumerate(rows):
         try:
@@ -81,7 +73,7 @@ def fetch_districts():
             })
         except Exception as e:
             print(f"  Warning: skipping district row {i+2}: {e} — {row}")
-    print(f"  Parsed {len(districts)} districts")
+    print(f"  Parsed {len(districts)} districts successfully")
     return districts
 
 def inject():
@@ -101,11 +93,11 @@ def inject():
     districts = fetch_districts()
 
     if not projects:
-        print("ERROR: No projects parsed — aborting to avoid overwriting with empty data")
+        print("ERROR: No projects parsed — aborting")
         sys.exit(1)
 
     if not districts:
-        print("ERROR: No districts parsed — aborting to avoid overwriting with empty data")
+        print("ERROR: No districts parsed — aborting")
         sys.exit(1)
 
     html = html.replace("__PROJECTS_DATA__",  json.dumps(projects,  indent=2))
