@@ -6,8 +6,8 @@ import urllib.request
 SHEET_ID = "1jqUSc8-h7xQtgbK3kNQex9EHjaIusFWDcKJsT78rF3Q"
 
 # Google Sheets JSON export — no auth needed if sheet is public viewer
-PROJECTS_URL  = f"https://docs.google.com/spreadsheets/d/{1jqUSc8-h7xQtgbK3kNQex9EHjaIusFWDcKJsT78rF3Q}/gviz/tq?tqx=out:json&sheet=Projects"
-DISTRICTS_URL = f"https://docs.google.com/spreadsheets/d/{1jqUSc8-h7xQtgbK3kNQex9EHjaIusFWDcKJsT78rF3Q}/gviz/tq?tqx=out:json&sheet=Districts"
+PROJECTS_URL  = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}gviz/tq?tqx=out:json&sheet=Projects"
+DISTRICTS_URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}gviz/tq?tqx=out:json&sheet=Districts"
 
 def fetch_sheet_json(url):
     print(f"  Fetching: {url[:80]}...")
