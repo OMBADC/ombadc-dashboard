@@ -1119,7 +1119,20 @@ function fmtPct(n){return n.toFixed(1)+'%';}
 function fmtM(n){if(n>=1e7)return(n/1e7).toFixed(2)+'M';if(n>=1e5)return(n/1e5).toFixed(2)+'L';return n.toLocaleString('en-IN');}
 let activeFilter='All',drillChart=null;
 function nav(page,el){document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));el.classList.add('active');document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById('panel-'+page).classList.add('active');const titles={overview:'Dashboard Overview',sectors:'Sector Analysis',districts:'District Coverage',projects:'Project Register',financial:'Financial Analytics'};const subs={overview:'All districts · All sectors · As of April 2026',sectors:'Breakdown by sector · '+Object.keys(getSectors()).length+' sectors',districts:districts.length+' districts under OMBADC',projects:projects.length+' projects — click to drill down',financial:'Fund flow & expenditure analysis'};document.getElementById('page-title').textContent=titles[page]||page;document.getElementById('page-sub').textContent=subs[page]||'';if(page==='financial')initFinancial();if(page==='districts')initDistricts();if(page==='sectors')initSectors();if(page==='projects')initProjects();}
-function enterDashboard(){const kpi=calcKPIs();document.getElementById('land-sanc').textContent='₹'+Math.round(kpi.totalSanc).toLocaleString('en-IN');document.getElementById('land-proj').textContent=kpi.totalProjects;document.getElementById('land-dist').textContent=districts.length;document.getElementById('land-pop').textContent=(districts.reduce((a,d)=>a+(d.pop||0),0)/1e6).toFixed(2)+'M';document.getElementById('landing').classList.add('hidden');setTimeout(()=>{document.getElementById('landing').style.display='none';initOverview();initProjects();},650);}
+function populateLanding(){
+  const kpi=calcKPIs();
+  document.getElementById('land-sanc').textContent='₹'+Math.round(kpi.totalSanc).toLocaleString('en-IN');
+  document.getElementById('land-proj').textContent=kpi.totalProjects;
+  document.getElementById('land-dist').textContent=districts.length;
+  document.getElementById('land-pop').textContent=(districts.reduce((a,d)=>a+(d.pop||0),0)/1e6).toFixed(2)+'M';
+}
+function enterDashboard(){
+  document.getElementById('landing').classList.add('hidden');
+  setTimeout(()=>{document.getElementById('landing').style.display='none';initOverview();initProjects();},650);
+}
+
+// Populate landing stats immediately when page loads
+window.addEventListener('DOMContentLoaded', populateLanding);
 function initOverview(){const kpi=calcKPIs();const sectors=getSectors();const sNames=Object.keys(sectors);document.getElementById('kpi-sanc').textContent=fmtCr(kpi.totalSanc);document.getElementById('kpi-rel').textContent=fmtCr(kpi.totalRel);document.getElementById('kpi-exp').textContent=fmtCr(kpi.totalExp);document.getElementById('kpi-bene').textContent=fmtM(kpi.totalBene);document.getElementById('kpi-rel-pct').textContent=fmtPct(kpi.relPct)+' of sanctioned';document.getElementById('kpi-exp-pct').textContent=fmtPct(kpi.expPct)+' of released';document.getElementById('kpi-proj-sub').textContent='Across '+kpi.totalProjects+' projects';document.getElementById('lbl-ongoing').textContent='Ongoing: '+kpi.ongoing;document.getElementById('lbl-completed').textContent='Completed: '+kpi.completed;
 new Chart(document.getElementById('c-sector-bar'),{type:'bar',data:{labels:sNames.map(s=>s.length>14?s.slice(0,14)+'…':s),datasets:[{label:'Sanctioned',data:sNames.map(s=>Math.round(sectors[s].sanc)),backgroundColor:'#0B1E3D'},{label:'Released',data:sNames.map(s=>Math.round(sectors[s].rel)),backgroundColor:'#378ADD'},{label:'Expended',data:sNames.map(s=>Math.round(sectors[s].exp)),backgroundColor:'#639922'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:10,family:F},maxRotation:30}},y:{ticks:{callback:v=>'₹'+v,font:{family:FM,size:10}}}}}});
 new Chart(document.getElementById('c-status-donut'),{type:'doughnut',data:{labels:['Ongoing','Completed'],datasets:[{data:[kpi.ongoing,kpi.completed],backgroundColor:['#185FA5','#3B6D11'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},cutout:'68%'}});
