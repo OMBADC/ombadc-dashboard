@@ -142,7 +142,7 @@
       <div class="sb-item" onclick="nav('projects',this)"><span class="sb-icon">&#8801;</span> Projects</div>
       <div class="sb-item" onclick="nav('financial',this)"><span class="sb-icon">&#8377;</span> Financial</div>
     </div>
-    <div class="sb-footer">Data · 18 Apr 2026</div>
+    <div class="sb-footer" id="sb-date">Data · Loading...</div>
   </div>
 
   <div id="main">
@@ -1132,7 +1132,18 @@ function enterDashboard(){
 }
 
 // Populate landing stats immediately when page loads
-window.addEventListener('DOMContentLoaded', populateLanding);
+window.addEventListener('DOMContentLoaded', function(){
+  populateLanding();
+  
+  // Set current date dynamically
+  const now = new Date();
+  const formatted = now.toLocaleDateString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  });
+  document.getElementById('sb-date').textContent = 'Data · ' + formatted;
+});
 function initOverview(){const kpi=calcKPIs();const sectors=getSectors();const sNames=Object.keys(sectors);document.getElementById('kpi-sanc').textContent=fmtCr(kpi.totalSanc);document.getElementById('kpi-rel').textContent=fmtCr(kpi.totalRel);document.getElementById('kpi-exp').textContent=fmtCr(kpi.totalExp);document.getElementById('kpi-bene').textContent=fmtM(kpi.totalBene);document.getElementById('kpi-rel-pct').textContent=fmtPct(kpi.relPct)+' of sanctioned';document.getElementById('kpi-exp-pct').textContent=fmtPct(kpi.expPct)+' of released';document.getElementById('kpi-proj-sub').textContent='Across '+kpi.totalProjects+' projects';document.getElementById('lbl-ongoing').textContent='Ongoing: '+kpi.ongoing;document.getElementById('lbl-completed').textContent='Completed: '+kpi.completed;
 new Chart(document.getElementById('c-sector-bar'),{type:'bar',data:{labels:sNames.map(s=>s.length>14?s.slice(0,14)+'…':s),datasets:[{label:'Sanctioned',data:sNames.map(s=>Math.round(sectors[s].sanc)),backgroundColor:'#0B1E3D'},{label:'Released',data:sNames.map(s=>Math.round(sectors[s].rel)),backgroundColor:'#378ADD'},{label:'Expended',data:sNames.map(s=>Math.round(sectors[s].exp)),backgroundColor:'#639922'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:10,family:F},maxRotation:30}},y:{ticks:{callback:v=>'₹'+v,font:{family:FM,size:10}}}}}});
 new Chart(document.getElementById('c-status-donut'),{type:'doughnut',data:{labels:['Ongoing','Completed'],datasets:[{data:[kpi.ongoing,kpi.completed],backgroundColor:['#185FA5','#3B6D11'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},cutout:'68%'}});
