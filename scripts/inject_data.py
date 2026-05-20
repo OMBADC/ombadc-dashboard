@@ -40,6 +40,8 @@ def parse_rows(data):
     print(f"  First row sample: {rows[0] if rows else 'NO ROWS'}")
     return rows
 
+MINING_DISTRICTS = ["Sundargarh", "Keonjhar", "Mayurbhanj", "Jajpur", "Dhenkanal", "Angul", "Jharsuguda", "Deogarh"]
+
 def fetch_projects():
     print("Fetching Projects sheet...")
     data = fetch_sheet_json(PROJECTS_URL)
@@ -48,11 +50,22 @@ def fetch_projects():
     projects = []
     for i, row in enumerate(rows):
         try:
+            name = str(row.get("name", "")).strip()
+            dept = str(row.get("dept", "")).strip()
+
+            # Identify district
+            found_district = None
+            for d in MINING_DISTRICTS:
+                if d.lower() in name.lower() or d.lower() in dept.lower():
+                    found_district = d
+                    break
+
             projects.append({
                 "id":     int(float(str(row.get("id",     i+1)))),
                 "sector": str(row.get("sector", "")).strip(),
-                "name":   str(row.get("name",   "")).strip(),
-                "dept":   str(row.get("dept",   "")).strip(),
+                "name":   name,
+                "dept":   dept,
+                "dist":   found_district,
                 "sanc":   float(str(row.get("sanc", 0)) or 0),
                 "rel":    float(str(row.get("rel",  0)) or 0),
                 "exp":    float(str(row.get("exp",  0)) or 0),
@@ -89,6 +102,13 @@ def inject():
     with open("template.html", "r", encoding="utf-8") as f:
         html = f.read()
 
+    print("Reading odisha.svg...")
+    with open("odisha.svg", "r", encoding="utf-8") as f:
+        svg_content = f.read()
+    # Remove XML declaration and doctype if present to inline cleanly
+    if "<?xml" in svg_content:
+        svg_content = svg_content[svg_content.find("<svg"):]
+
     if "__PROJECTS_DATA__" not in html:
         print("ERROR: __PROJECTS_DATA__ placeholder not found in template.html")
         sys.exit(1)
@@ -110,6 +130,7 @@ def inject():
 
     html = html.replace("__PROJECTS_DATA__",  json.dumps(projects,  indent=2))
     html = html.replace("__DISTRICTS_DATA__", json.dumps(districts, indent=2))
+    html = html.replace("__ODISHA_SVG__", svg_content)
 
     print("Writing index.html...")
     with open("index.html", "w", encoding="utf-8") as f:
