@@ -25,7 +25,8 @@
   .enter-btn:hover { background:var(--blue-light); }
   .land-grid { position:absolute; inset:0; opacity:0.035; background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px); background-size:56px 56px; pointer-events:none; }
   .land-rule { width:280px; height:1px; background:rgba(55,138,221,0.4); margin-bottom:40px; }
-  #sidebar { width:210px; min-width:210px; background:var(--navy); display:flex; flex-direction:column; font-family:var(--f-body); }
+  #sidebar { width:210px; min-width:210px; background:var(--navy); display:flex; flex-direction:column; font-family:var(--f-body); transition:width 0.25s ease,min-width 0.25s ease,opacity 0.2s ease; overflow:hidden; }
+  #sidebar.collapsed { width:0; min-width:0; opacity:0; pointer-events:none; }
   .sb-brand { padding:22px 18px 18px; border-bottom:0.5px solid rgba(255,255,255,0.08); }
   .sb-org { font-size:9px; letter-spacing:0.2em; color:#5A8FBD; text-transform:uppercase; font-weight:500; margin-bottom:4px; }
   .sb-name { font-size:18px; font-weight:600; color:#fff; letter-spacing:-0.02em; }
@@ -38,13 +39,15 @@
   .sb-icon { width:15px; text-align:center; font-size:13px; opacity:0.7; }
   .sb-footer { padding:14px 18px; border-top:0.5px solid rgba(255,255,255,0.08); font-size:10px; color:rgba(255,255,255,0.22); font-family:var(--f-mono); letter-spacing:0.04em; }
   #main { flex:1; overflow-y:auto; display:flex; flex-direction:column; }
-  .topbar { display:flex; align-items:center; justify-content:space-between; padding:15px 26px; background:#fff; border-bottom:1px solid #E8ECF2; }
-  .topbar-left { display:flex; flex-direction:column; gap:2px; }
+  .topbar { display:flex; align-items:center; justify-content:space-between; padding:15px 26px; background:#fff; border-bottom:1px solid #E8ECF2; gap:12px; }
+  .topbar-left { display:flex; flex-direction:column; gap:2px; flex:1; }
   .topbar-title { font-size:16px; font-weight:600; color:#0B1E3D; letter-spacing:-0.02em; }
   .topbar-sub { font-size:11px; color:#7A8599; font-weight:400; letter-spacing:0.02em; }
   .topbar-right { display:flex; align-items:center; gap:8px; }
   .topbar-badge { background:#E6F1FB; color:#0C447C; font-size:10px; padding:4px 11px; border-radius:4px; font-weight:500; letter-spacing:0.06em; font-family:var(--f-mono); }
   .unit-badge { background:#F4F6FA; color:#7A8599; font-size:10px; padding:4px 11px; border-radius:4px; font-weight:500; letter-spacing:0.04em; font-family:var(--f-mono); border:1px solid #E2E6EF; }
+  .sb-toggle { background:none; border:1px solid #E2E6EF; border-radius:5px; padding:5px 9px; cursor:pointer; font-size:15px; color:#7A8599; line-height:1; flex-shrink:0; transition:background 0.15s,color 0.15s; }
+  .sb-toggle:hover { background:#F4F6FA; color:#0B1E3D; }
   .content { padding:22px 26px; flex:1; }
   .panel { display:none; } .panel.active { display:block; }
   .metric-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px; }
@@ -151,6 +154,7 @@
 
   <div id="main">
     <div class="topbar">
+      <button class="sb-toggle" onclick="toggleSidebar()">&#9776;</button>
       <div class="topbar-left">
         <div class="topbar-title" id="page-title">Dashboard Overview</div>
         <div class="topbar-sub" id="page-sub">All districts · All sectors · As of April 2026</div>
@@ -1152,6 +1156,10 @@ function fmtPct(n){return n.toFixed(1)+'%';}
 function fmtM(n){if(n>=1e7)return(n/1e7).toFixed(2)+'M';if(n>=1e5)return(n/1e5).toFixed(2)+'L';return n.toLocaleString('en-IN');}
 
 let activeFilter='All',drillChart=null;
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('collapsed');
+}
 
 function nav(page,el){
   document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));
