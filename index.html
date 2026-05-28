@@ -671,7 +671,7 @@
           <div id="dist-charts-col">
             <div class="chart-card" style="margin-bottom:14px">
               <div class="card-title">Village &amp; block coverage</div>
-              <div class="card-sub">Blocks and villages per district (villages &#247; 10)</div>
+              <div class="card-sub">Blocks and villages per district </div>
               <div class="chart-wrap" style="height:200px"><canvas id="c-district-coverage"></canvas></div>
             </div>
             <div class="chart-card">
@@ -1067,9 +1067,30 @@ function initDistricts(){
   const totalPop=districts.reduce((a,d)=>a+(d.pop||0),0);const totalBlk=districts.reduce((a,d)=>a+(d.blocks||0),0);const totalVil=districts.reduce((a,d)=>a+(d.villages||0),0);
   const dColors=['#0B1E3D','#185FA5','#378ADD','#1D9E75','#BA7517','#534AB7','#993C1D','#3B6D11'];
   document.getElementById('district-metrics').innerHTML=`<div class="metric-card"><div class="metric-label">Districts Covered</div><div class="metric-val">${districts.length}</div><div class="metric-sub">Mining-affected districts</div></div><div class="metric-card" style="border-top-color:#378ADD"><div class="metric-label">Total Blocks</div><div class="metric-val">${totalBlk}</div><div class="metric-sub">Blocks under OMBADC</div></div><div class="metric-card" style="border-top-color:#3B6D11"><div class="metric-label">Total Villages</div><div class="metric-val">${totalVil.toLocaleString('en-IN')}</div><div class="metric-sub">Villages covered</div></div><div class="metric-card" style="border-top-color:#BA7517"><div class="metric-label">Total Population</div><div class="metric-val">${(totalPop/1e6).toFixed(2)}M</div><div class="metric-sub">Persons under coverage</div></div>`;
-  if(window._dc)window._dc.destroy();
-  window._dc=new Chart(document.getElementById('c-district-coverage'),{type:'bar',data:{labels:districts.map(d=>d.name),datasets:[{label:'Blocks',data:districts.map(d=>d.blocks||0),backgroundColor:'#0B1E3D'},{label:'Villages (÷10)',data:districts.map(d=>Math.round((d.villages||0)/10)),backgroundColor:'#378ADD'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{font:{size:10,family:F},color:'#4A5568'}}},scales:{x:{ticks:{font:{size:9,family:F},color:'#4A5568',maxRotation:30}},y:{ticks:{font:{size:9,family:FM},color:'#4A5568'}}}}});
-  if(window._dp)window._dp.destroy();
+ if(window._dc)window._dc.destroy();
+  window._dc=new Chart(document.getElementById('c-district-coverage'),{
+    data:{
+      labels:districts.map(d=>d.name),
+      datasets:[
+        {type:'bar',label:'Blocks',data:districts.map(d=>d.blocks||0),backgroundColor:'#0B1E3D',yAxisID:'yLeft',order:2},
+        {type:'line',label:'Villages',data:districts.map(d=>d.villages||0),borderColor:'#D85A30',backgroundColor:'#D85A30',pointBackgroundColor:'#D85A30',pointRadius:5,pointHoverRadius:7,tension:0.3,yAxisID:'yRight',order:1}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:true,labels:{font:{size:10,family:F},color:'#4A5568',usePointStyle:true}},
+        tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.parsed.y.toLocaleString()}}
+      },
+      scales:{
+        x:{ticks:{font:{size:9,family:F},color:'#4A5568',maxRotation:30},grid:{display:false}},
+        yLeft:{type:'linear',position:'left',title:{display:true,text:'Blocks',font:{size:10,family:F}},ticks:{font:{size:9,family:FM},color:'#4A5568'},grid:{color:'rgba(0,0,0,0.05)'}},
+        yRight:{type:'linear',position:'right',title:{display:true,text:'Villages',font:{size:10,family:F}},ticks:{font:{size:9,family:FM},color:'#4A5568'},grid:{drawOnChartArea:false}}
+      }
+    }
+  }); 
+ if(window._dp)window._dp.destroy();
   window._dp=new Chart(document.getElementById('c-district-pop'),{type:'bar',data:{labels:districts.map(d=>d.name),datasets:[{label:'Population',data:districts.map(d=>d.pop||0),backgroundColor:dColors}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw.toLocaleString('en-IN')}}},scales:{x:{ticks:{font:{size:9,family:F},color:'#4A5568',maxRotation:30}},y:{ticks:{callback:v=>(v/1e5).toFixed(0)+'L',font:{size:9,family:FM},color:'#4A5568'}}}}});
   if(!_mapHandlersInited){ initMapHandlers(); _mapHandlersInited=true; }
 }
