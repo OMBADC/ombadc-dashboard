@@ -982,7 +982,10 @@ function initFinancial(){
 window.addEventListener('DOMContentLoaded',function(){
   populateLanding();
   const now=new Date();
+  const monthYear=now.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
   document.getElementById('sb-date').textContent='Data · '+now.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  document.getElementById('page-sub').textContent='All districts · All sectors · As of '+monthYear;
+});
 </script>
 </body>
 </html>
