@@ -194,7 +194,7 @@
   .district.other { fill: #6E7F8D; }
   .district.ombadc { fill: #185FA5; stroke: #0F4A85; stroke-width: 0.7; cursor: pointer; }
   .district.ombadc:hover { fill: #2575C4; stroke: #0B1E3D; stroke-width: 1.2; filter: drop-shadow(0 0 5px rgba(24,95,165,0.4)); }
-  .district.ombadc.active { fill: #E08C3A; stroke: #378ADD; stroke-width: 1.5; filter: drop-shadow(0 0 7px rgba(11,30,61,0.35)); }
+  .district.ombadc.active { fill: #E08C3A; stroke: #A0561C; stroke-width: 1.5; filter: drop-shadow(0 0 7px rgba(11,30,61,0.35)); }
   .dlabel { pointer-events: none; text-anchor: middle; dominant-baseline: middle; }
   .dlabel.ombadc-label { font-family: 'DM Sans',sans-serif; font-size: 8px; font-weight: 700; fill: #fff; paint-order: stroke; stroke: #0B1E3D; stroke-width: 3; stroke-linejoin: round; }
   .dlabel.other-label { font-family: 'DM Sans',sans-serif; font-size: 6px; fill: #ccc; }
@@ -585,7 +585,7 @@
               </div>
               <div class="map-legend">
                 <div class="map-legend-item"><div class="map-legend-dot" style="background:#185FA5;border:1px solid #0F4A85"></div> OMBADC</div>
-                <div class="map-legend-item"><div class="map-legend-dot" style="background:#9E9E9E;border:1px solid #757575"></div> Other</div>
+                <div class="map-legend-item"><div class="map-legend-dot" style="background:#6E7F8D;border:1px solid #4A5568"></div> Other</div>
                 <div class="map-legend-item"><div class="map-legend-dot" style="background:#E08C3A;border:1px solid #A0561C"></div> Selected</div>
               </div>
             </div>
@@ -894,10 +894,15 @@ function initMapHandlers() {
     svg.style.cursor = scale > 1 ? 'grab' : 'default';
   }
 
-  // Click on districts
+  // Click on districts - use mousedown/mouseup to detect true click vs pan
+  let _wasDragging = false;
+  svg.addEventListener('mousedown', () => { _wasDragging = false; });
+  window.addEventListener('mousemove', () => { if(isPanning) _wasDragging = true; });
+
   g.querySelectorAll('.district.ombadc').forEach(el => {
     el.addEventListener('click', (e) => {
-      if (Math.abs(e.clientX - startX) > 5 || Math.abs(e.clientY - startY) > 5) return;
+      if (_wasDragging) return;
+      e.stopPropagation();
       mapSelectDistrict(el.dataset.name);
     });
   });
