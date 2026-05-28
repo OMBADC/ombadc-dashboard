@@ -774,6 +774,26 @@ let activeFilter='All',drillChart=null,currentTheme='navy';
 let mapCurrentDistrict=null, mapCurrentFilter="all";
 let _mapHandlersInited=false;
 
+
+const MAP_SECTOR_SHORT = {
+  'Drinking Water Supply through piped Water': 'Drinking Water',
+  'Education (Including Training & Education for Skill Development)': 'Education',
+  'Health (Including Anganwadi Centres)': 'Health',
+  'Livelihood Promotion': 'Livelihood',
+  'Rural Connectivity': 'Connectivity',
+  'Environmental Protection and pollution control': 'Environment',
+  'Water Conservation and Ground water Recharge & SMC': 'Water Conservation',
+};
+
+const MAP_SECTOR_COLORS = {
+  'Drinking Water Supply through piped Water': '#185FA5',
+  'Education (Including Training & Education for Skill Development)': '#639922',
+  'Health (Including Anganwadi Centres)': '#BA7517',
+  'Livelihood Promotion': '#0F6E56',
+  'Rural Connectivity': '#993C1D',
+  'Environmental Protection and pollution control': '#534AB7',
+  'Water Conservation and Ground water Recharge & SMC': '#1D9E75',
+};
 function mapGetColor(sector){ return MAP_SECTOR_COLORS[sector] || '#185FA5'; }
 
 function mapSelectDistrict(name) {
