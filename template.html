@@ -191,13 +191,13 @@
 
   /* SVG district styles */
   .district { stroke: #C8D5E8; stroke-width: 0.5; transition: all 0.18s ease; cursor: default; }
-  .district.other { fill: #D8E6F3; }
+  .district.other { fill: #6E7F8D; }
   .district.ombadc { fill: #185FA5; stroke: #0F4A85; stroke-width: 0.7; cursor: pointer; }
   .district.ombadc:hover { fill: #2575C4; stroke: #0B1E3D; stroke-width: 1.2; filter: drop-shadow(0 0 5px rgba(24,95,165,0.4)); }
   .district.ombadc.active { fill: #E08C3A; stroke: #378ADD; stroke-width: 1.5; filter: drop-shadow(0 0 7px rgba(11,30,61,0.35)); }
   .dlabel { pointer-events: none; text-anchor: middle; dominant-baseline: middle; }
   .dlabel.ombadc-label { font-family: 'DM Sans',sans-serif; font-size: 8px; font-weight: 700; fill: #fff; paint-order: stroke; stroke: #0B1E3D; stroke-width: 3; stroke-linejoin: round; }
-  .dlabel.other-label { font-family: 'DM Sans',sans-serif; font-size: 6px; fill: #7A9BBF; }
+  .dlabel.other-label { font-family: 'DM Sans',sans-serif; font-size: 6px; fill: #ccc; }
   .dcount { pointer-events: none; text-anchor: middle; dominant-baseline: middle; font-family: 'DM Sans',sans-serif; font-size: 6px; font-weight: 600; fill: #BDD9F5; paint-order: stroke; stroke: #0B1E3D; stroke-width: 2.5; stroke-linejoin: round; }
 
 
@@ -394,13 +394,13 @@
 
   /* SVG district styles */
   .district { stroke: #C8D5E8; stroke-width: 0.5; transition: all 0.18s ease; cursor: default; }
-  .district.other { fill: #D8E6F3; }
+  .district.other { fill: #6E7F8D; }
   .district.ombadc { fill: #185FA5; stroke: #0F4A85; stroke-width: 0.7; cursor: pointer; }
   .district.ombadc:hover { fill: #2575C4; stroke: #0B1E3D; stroke-width: 1.2; filter: drop-shadow(0 0 5px rgba(24,95,165,0.4)); }
   .district.ombadc.active { fill: #E08C3A; stroke: #A0561C; stroke-width: 1.5; filter: drop-shadow(0 0 7px rgba(11,30,61,0.35)); }
   .dlabel { pointer-events: none; text-anchor: middle; dominant-baseline: middle; }
   .dlabel.ombadc-label { font-family: 'DM Sans',sans-serif; font-size: 8px; font-weight: 700; fill: #fff; paint-order: stroke; stroke: #0B1E3D; stroke-width: 3; stroke-linejoin: round; }
-  .dlabel.other-label { font-family: 'DM Sans',sans-serif; font-size: 6px; fill: #7A9BBF; }
+  .dlabel.other-label { font-family: 'DM Sans',sans-serif; font-size: 6px; fill: #ccc; }
   .dcount { pointer-events: none; text-anchor: middle; dominant-baseline: middle; font-family: 'DM Sans',sans-serif; font-size: 6px; font-weight: 600; fill: #BDD9F5; paint-order: stroke; stroke: #0B1E3D; stroke-width: 2.5; stroke-linejoin: round; }
 
 
@@ -585,7 +585,7 @@
               </div>
               <div class="map-legend">
                 <div class="map-legend-item"><div class="map-legend-dot" style="background:#185FA5;border:1px solid #0F4A85"></div> OMBADC</div>
-                <div class="map-legend-item"><div class="map-legend-dot" style="background:#D8E6F3;border:1px solid #C8D5E8"></div> Other</div>
+                <div class="map-legend-item"><div class="map-legend-dot" style="background:#9E9E9E;border:1px solid #757575"></div> Other</div>
                 <div class="map-legend-item"><div class="map-legend-dot" style="background:#E08C3A;border:1px solid #A0561C"></div> Selected</div>
               </div>
             </div>
@@ -758,6 +758,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
+const
 const F="'DM Sans',system-ui,sans-serif",FM="'DM Mono',monospace";
 Chart.defaults.font.family=F;
 Chart.defaults.font.size=11;
@@ -790,13 +791,13 @@ function mapSelectDistrict(name) {
 
   document.getElementById('modal-district-name').textContent = name;
   document.getElementById('modal-kpi-count').textContent = projs.length;
-  document.getElementById('modal-kpi-phys').textContent = (avgPhys*100).toFixed(1)+'%';
-  document.getElementById('modal-kpi-fin').textContent = (avgFin*100).toFixed(1)+'%';
-  document.getElementById('modal-phys-pct').textContent = (avgPhys*100).toFixed(1)+'%';
-  document.getElementById('modal-fin-pct').textContent = (avgFin*100).toFixed(1)+'%';
+  document.getElementById('modal-kpi-phys').textContent = avgPhys.toFixed(1)+'%';
+  document.getElementById('modal-kpi-fin').textContent = avgFin.toFixed(1)+'%';
+  document.getElementById('modal-phys-pct').textContent = avgPhys.toFixed(1)+'%';
+  document.getElementById('modal-fin-pct').textContent = avgFin.toFixed(1)+'%';
   setTimeout(() => {
-    document.getElementById('modal-phys-bar').style.width = (avgPhys*100)+'%';
-    document.getElementById('modal-fin-bar').style.width = (avgFin*100)+'%';
+    document.getElementById('modal-phys-bar').style.width = Math.min(avgPhys,100)+'%';
+    document.getElementById('modal-fin-bar').style.width = Math.min(avgFin,100)+'%';
   }, 60);
 
   document.getElementById('modal-sector-pills').innerHTML = sectors.map(s =>
@@ -825,8 +826,8 @@ function mapRenderProjects(projs, total) {
   document.getElementById('modal-show-count').textContent = projs.length;
   document.getElementById('modal-total-count').textContent = tot;
   document.getElementById('modal-projects-list').innerHTML = projs.map(p => {
-    const ph = (p.physical_pct*100).toFixed(0);
-    const fn = (p.financial_pct*100).toFixed(0);
+    const ph = Math.min(p.physical_pct,100).toFixed(0);
+    const fn = Math.min(p.financial_pct,100).toFixed(0);
     const col = mapGetColor(p.sector);
     return `<div class="modal-project-card" style="border-left-color:${col}">
       <div class="modal-proj-top">
@@ -1141,7 +1142,7 @@ window.addEventListener('DOMContentLoaded',function(){
   document.getElementById('sb-date').textContent='Data · '+now.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
   document.getElementById('page-sub').textContent='All districts · All sectors · As of '+monthYear;
 });
-</script>
+pt>
 <!-- DISTRICT MODAL -->
       <div id="map-modal-overlay" onclick="modalOverlayClick(event)">
         <div id="map-modal">
