@@ -168,7 +168,7 @@
     flex-wrap: wrap;
   }
   #map-panel-header .card-title { margin: 0; flex: 1; white-space: nowrap; }
-  .map-hint-pill {
+  .map-hint-pill { font-family: 'DM Sans',sans-serif;
     font-size: 10px; color: #185FA5; background: #E6F1FB;
     border-radius: 4px; padding: 3px 9px; font-weight: 500; border: 1px solid #C5D9F0;
     white-space: nowrap;
@@ -176,7 +176,7 @@
   .map-legend {
     display: flex; gap: 10px; flex-wrap: wrap;
   }
-  .map-legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: #7A8599; font-weight: 500; }
+  .map-legend-item { display: flex; align-items: center; gap: 6px; font-size: 10px; color: #4A5568; font-weight: 500; font-family: 'DM Sans',sans-serif; letter-spacing: 0.02em; }
   .map-legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
   #map-svg-wrap {
     flex: 1;
@@ -190,15 +190,15 @@
   #map-svg-wrap svg { width: 100%; height: 100%; max-height: 100%; }
 
   /* SVG district styles */
-  .district { stroke: #C8D5E8; stroke-width: 0.5; transition: all 0.18s ease; cursor: default; }
-  .district.other { fill: #6E7F8D; }
+  .district { fill: #6E7F8D; stroke: #4A5568; stroke-width: 0.5; transition: all 0.18s ease; cursor: default; }
+  .district.other { fill: #6E7F8D; stroke: #4A5568; }
   .district.ombadc { fill: #185FA5; stroke: #0F4A85; stroke-width: 0.7; cursor: pointer; }
   .district.ombadc:hover { fill: #2575C4; stroke: #0B1E3D; stroke-width: 1.2; filter: drop-shadow(0 0 5px rgba(24,95,165,0.4)); }
   .district.ombadc.active { fill: #E08C3A; stroke: #A0561C; stroke-width: 1.5; filter: drop-shadow(0 0 7px rgba(11,30,61,0.35)); }
   .dlabel { pointer-events: none; text-anchor: middle; dominant-baseline: middle; }
-  .dlabel.ombadc-label { font-family: 'DM Sans',sans-serif; font-size: 8px; font-weight: 700; fill: #fff; paint-order: stroke; stroke: #0B1E3D; stroke-width: 3; stroke-linejoin: round; }
+  .dlabel.ombadc-label { font-family: 'DM Sans',sans-serif; font-size: 7.5px; font-weight: 600; fill: #ffffff; letter-spacing: 0.03em; paint-order: stroke; stroke: #0B1E3D; stroke-width: 2.5; stroke-linejoin: round; }
   .dlabel.other-label { font-family: 'DM Sans',sans-serif; font-size: 6px; fill: #ccc; }
-  .dcount { pointer-events: none; text-anchor: middle; dominant-baseline: middle; font-family: 'DM Sans',sans-serif; font-size: 6px; font-weight: 600; fill: #BDD9F5; paint-order: stroke; stroke: #0B1E3D; stroke-width: 2.5; stroke-linejoin: round; }
+  .dcount { pointer-events: none; text-anchor: middle; dominant-baseline: middle; font-family: 'DM Sans',sans-serif; font-size: 6px; font-weight: 500; fill: #d0e4f7; letter-spacing: 0.02em; paint-order: stroke; stroke: #0B1E3D; stroke-width: 2; stroke-linejoin: round; }
 
 
   /* ── ZOOM CONTROLS ── */
@@ -246,6 +246,8 @@
     box-shadow: 0 24px 80px rgba(11,30,61,0.3);
     overflow: hidden;
     animation: modalIn 0.22s ease;
+    font-family: 'DM Sans',system-ui,sans-serif;
+    font-size: 13px;
   }
   @keyframes modalIn {
     from { opacity:0; transform:scale(0.95) translateY(12px); }
@@ -276,7 +278,7 @@
   .modal-kpi:first-child { border-top-color: #7BAFD4; }
   .modal-kpi:last-child { border-top-color: #639922; }
   .modal-kpi-val { font-size: 20px; font-weight: 600; color: #fff; font-family: 'DM Mono',monospace; }
-  .modal-kpi-label { font-size: 9px; color: #7BAFD4; margin-top: 2px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; }
+  .modal-kpi-label { font-size: 9px; color: #7BAFD4; margin-top: 2px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; font-family: 'DM Sans',system-ui,sans-serif; }
   .modal-prog-row { display: flex; gap: 10px; margin-top: 10px; }
   .modal-prog-item { flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 8px 12px; }
   .modal-prog-label { font-size: 10px; color: #7BAFD4; margin-bottom: 5px; display: flex; justify-content: space-between; }
@@ -291,19 +293,19 @@
   #modal-body::-webkit-scrollbar-thumb { background: #D8DDE8; border-radius: 2px; }
 
   .modal-section { padding: 14px 24px; border-bottom: 1px solid #E8ECF2; background: #fff; }
-  .modal-section-title { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: #7A8599; margin-bottom: 8px; }
+  .modal-section-title { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: #7A8599; margin-bottom: 8px; font-family: 'DM Sans',system-ui,sans-serif; }
   .modal-sector-pills { display: flex; flex-wrap: wrap; gap: 5px; }
-  .modal-sector-pill { padding: 3px 10px; border-radius: 20px; font-size: 9px; font-weight: 700; color: #fff; white-space: nowrap; }
+  .modal-sector-pill { padding: 3px 10px; border-radius: 20px; font-size: 9px; font-weight: 700; color: #fff; white-space: nowrap; font-family: 'DM Sans',system-ui,sans-serif; }
 
   .modal-filter-area { background: #fff; border-bottom: 1px solid #E8ECF2; padding: 10px 24px 12px; }
-  .modal-filter-label { font-size: 9px; color: #7A8599; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 7px; }
+  .modal-filter-label { font-size: 9px; color: #7A8599; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 7px; font-family: 'DM Sans',system-ui,sans-serif; }
   .modal-filter-btn { padding: 4px 11px; border-radius: 4px; border: 1px solid #D8DDE8; background: #fff; color: #7A8599; font-size: 10px; cursor: pointer; transition: all 0.15s; font-family: 'DM Sans',sans-serif; font-weight: 500; margin-right: 5px; margin-bottom: 5px; }
   .modal-filter-btn:hover { background: #EEF4FC; color: #185FA5; border-color: #C5D9F0; }
   .modal-filter-btn.active { background: #0B1E3D; border-color: #0B1E3D; color: #fff; font-weight: 600; }
 
   .modal-projects-area { padding: 0 24px 24px; flex: 1; }
   .modal-projects-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 0 8px; }
-  .modal-projects-count { font-size: 10px; color: #7A8599; font-weight: 500; }
+  .modal-projects-count { font-size: 10px; color: #7A8599; font-weight: 500; font-family: 'DM Sans',system-ui,sans-serif; }
   .modal-projects-count span { color: #185FA5; font-weight: 700; }
 
   .modal-project-card {
@@ -315,14 +317,14 @@
   .modal-project-card:hover { border-color: #C5D9F0; box-shadow: 0 2px 6px rgba(24,95,165,0.07); }
   .modal-proj-top { display: flex; align-items: flex-start; gap: 9px; margin-bottom: 8px; }
   .modal-proj-num { font-size: 9px; font-weight: 700; color: #185FA5; background: #E6F1FB; border: 1px solid #C5D9F0; border-radius: 3px; padding: 2px 6px; flex-shrink: 0; font-family: 'DM Mono',monospace; }
-  .modal-proj-name { font-size: 12px; font-weight: 500; color: #0B1E3D; line-height: 1.4; flex: 1; }
-  .modal-sector-tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 8px; font-weight: 700; color: #fff; margin-bottom: 7px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .modal-proj-name { font-size: 12px; font-weight: 500; color: #0B1E3D; line-height: 1.4; flex: 1; font-family: 'DM Sans',system-ui,sans-serif; }
+  .modal-sector-tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 8px; font-weight: 700; color: #fff; margin-bottom: 7px; text-transform: uppercase; letter-spacing: 0.04em; font-family: 'DM Sans',system-ui,sans-serif; }
   .modal-proj-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 14px; margin-bottom: 8px; }
-  .modal-meta-item { font-size: 10px; color: #7A8599; line-height: 1.4; }
-  .modal-meta-item strong { color: #1A2B45; display: block; font-size: 10px; font-weight: 600; }
+  .modal-meta-item { font-size: 10px; color: #7A8599; line-height: 1.4; font-family: 'DM Sans',system-ui,sans-serif; }
+  .modal-meta-item strong { color: #1A2B45; display: block; font-size: 10px; font-weight: 600; font-family: 'DM Sans',system-ui,sans-serif; }
   .modal-proj-prog { display: flex; gap: 8px; }
   .modal-prog2 { flex: 1; }
-  .modal-prog2-top { display: flex; justify-content: space-between; font-size: 9px; color: #7A8599; margin-bottom: 2px; font-weight: 500; }
+  .modal-prog2-top { display: flex; justify-content: space-between; font-size: 9px; color: #7A8599; margin-bottom: 2px; font-weight: 500; font-family: 'DM Sans',system-ui,sans-serif; }
   .modal-prog2-top span:last-child { font-weight: 700; color: #1A2B45; font-family: 'DM Mono',monospace; }
   .modal-prog2-bar { height: 4px; background: #EDF0F7; border-radius: 2px; overflow: hidden; }
   .modal-prog2-fill { height: 100%; border-radius: 2px; }
@@ -371,7 +373,7 @@
     flex-wrap: wrap;
   }
   #map-panel-header .card-title { margin: 0; flex: 1; white-space: nowrap; }
-  .map-hint-pill {
+  .map-hint-pill { font-family: 'DM Sans',sans-serif;
     font-size: 10px; color: #185FA5; background: #E6F1FB;
     border-radius: 4px; padding: 3px 9px; font-weight: 500; border: 1px solid #C5D9F0;
     white-space: nowrap;
@@ -379,7 +381,7 @@
   .map-legend {
     display: flex; gap: 10px; flex-wrap: wrap;
   }
-  .map-legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: #7A8599; font-weight: 500; }
+  .map-legend-item { display: flex; align-items: center; gap: 6px; font-size: 10px; color: #4A5568; font-weight: 500; font-family: 'DM Sans',sans-serif; letter-spacing: 0.02em; }
   .map-legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
   #map-svg-wrap {
     flex: 1;
@@ -393,15 +395,15 @@
   #map-svg-wrap svg { width: 100%; height: 100%; max-height: 100%; }
 
   /* SVG district styles */
-  .district { stroke: #C8D5E8; stroke-width: 0.5; transition: all 0.18s ease; cursor: default; }
-  .district.other { fill: #6E7F8D; }
+  .district { fill: #6E7F8D; stroke: #4A5568; stroke-width: 0.5; transition: all 0.18s ease; cursor: default; }
+  .district.other { fill: #6E7F8D; stroke: #4A5568; }
   .district.ombadc { fill: #185FA5; stroke: #0F4A85; stroke-width: 0.7; cursor: pointer; }
   .district.ombadc:hover { fill: #2575C4; stroke: #0B1E3D; stroke-width: 1.2; filter: drop-shadow(0 0 5px rgba(24,95,165,0.4)); }
   .district.ombadc.active { fill: #E08C3A; stroke: #A0561C; stroke-width: 1.5; filter: drop-shadow(0 0 7px rgba(11,30,61,0.35)); }
   .dlabel { pointer-events: none; text-anchor: middle; dominant-baseline: middle; }
-  .dlabel.ombadc-label { font-family: 'DM Sans',sans-serif; font-size: 8px; font-weight: 700; fill: #fff; paint-order: stroke; stroke: #0B1E3D; stroke-width: 3; stroke-linejoin: round; }
+  .dlabel.ombadc-label { font-family: 'DM Sans',sans-serif; font-size: 7.5px; font-weight: 600; fill: #ffffff; letter-spacing: 0.03em; paint-order: stroke; stroke: #0B1E3D; stroke-width: 2.5; stroke-linejoin: round; }
   .dlabel.other-label { font-family: 'DM Sans',sans-serif; font-size: 6px; fill: #ccc; }
-  .dcount { pointer-events: none; text-anchor: middle; dominant-baseline: middle; font-family: 'DM Sans',sans-serif; font-size: 6px; font-weight: 600; fill: #BDD9F5; paint-order: stroke; stroke: #0B1E3D; stroke-width: 2.5; stroke-linejoin: round; }
+  .dcount { pointer-events: none; text-anchor: middle; dominant-baseline: middle; font-family: 'DM Sans',sans-serif; font-size: 6px; font-weight: 500; fill: #d0e4f7; letter-spacing: 0.02em; paint-order: stroke; stroke: #0B1E3D; stroke-width: 2; stroke-linejoin: round; }
 
 
   /* ── ZOOM CONTROLS ── */
