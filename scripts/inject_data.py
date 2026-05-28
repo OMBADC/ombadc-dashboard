@@ -82,6 +82,21 @@ def safe_str(val):
     return str(val).replace("\n", " ").replace("\r", " ").strip() if val is not None else ""
 
 
+def parse_gviz_date(val):
+    """Convert Google Visualization date format Date(YYYY,M,D) to DD-Mon-YYYY."""
+    if not val:
+        return ""
+    import re as _re
+    s = str(val).strip()
+    m = _re.match(r'Date\((\d+),(\d+),(\d+)\)', s)
+    if m:
+        y, mo, d = int(m.group(1)), int(m.group(2)) + 1, int(m.group(3))
+        months = ['Jan','Feb','Mar','Apr','May','Jun',
+                  'Jul','Aug','Sep','Oct','Nov','Dec']
+        return f"{d:02d}-{months[mo-1]}-{y}"
+    return s
+
+
 # ── FETCH PROJECTS ─────────────────────────────────────────────────────────
 
 def fetch_projects():
@@ -179,7 +194,7 @@ def fetch_map():
             "name":                 safe_str(row.get("Project_Name", "")),
             "sector":               safe_str(row.get("Sector", "")),
             "approved_cost":        safe_float(row.get("Approved_Cost_Cr", 0)),
-            "approval_date":        safe_str(row.get("Board_Approval_Date", "")),
+            "approval_date":        parse_gviz_date(row.get("Board_Approval_Date", "")),
             "line_dept":            safe_str(row.get("Line_Department", "")),
             "executing_agency":     safe_str(row.get("Executing_Agency", "")),
             "sanctioned_cost":      safe_float(row.get("Sanctioned_Cost_Cr", 0)),
