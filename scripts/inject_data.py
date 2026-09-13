@@ -77,6 +77,20 @@ def safe_float(val, default=0.0):
         return default
 
 
+def normalize_pct(val):
+    """Normalize percentage values - handles both 0.95 (decimal) and 95 (whole number) formats."""
+    if val is None or val == "":
+        return 0.0
+    try:
+        v = float(str(val).replace('%', '').replace(',', '').strip())
+        # If value is stored as decimal (0.0 to 1.0), convert to percentage
+        if 0 < v <= 1.0:
+            return round(v * 100, 2)
+        return round(v, 2)
+    except (ValueError, TypeError):
+        return 0.0
+
+
 def safe_str(val):
     """Convert to string, strip whitespace, replace literal newlines."""
     return str(val).replace("\n", " ").replace("\r", " ").strip() if val is not None else ""
@@ -200,8 +214,8 @@ def fetch_map():
             "sanctioned_cost":      safe_float(row.get("Sanctioned_Cost_Cr", 0)),
             "execution_period":     safe_str(row.get("Execution_Period", "")),
             "districts":            districts_raw,
-            "physical_pct":         safe_float(row.get("Physical_Progress_Pct", 0)),
-            "financial_pct":        safe_float(row.get("Financial_Progress_Pct", 0)),
+            "physical_pct":         normalize_pct(row.get("Physical_Progress_Pct", 0)),
+            "financial_pct":        normalize_pct(row.get("Financial_Progress_Pct", 0)),
         }
 
         if not proj["name"]:
